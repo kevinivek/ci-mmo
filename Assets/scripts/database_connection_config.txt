@@ -1,0 +1,16 @@
+## Database Connection Config
+
+##Change the values to the credentials you want to use
+##Use a line with the '#' prefix to state the connection parameter, then the line after for the value
+
+
+#server
+server
+#uid
+user
+#pwd
+pwd
+
+## GIT USERS WARNING: DO NOT CHANGE THESE VALUES TO YOUR ACTUAL CREDENTIALS AND PUSH THEM BACK TO THE REPO. INSTEAD ABSTAIN FROM PUSHING THE CHANGE AND ONLY KEEP IT LOCAL, IGNORE IT FROM BEING ADDED TO A COMMIT AND PUSHING TO THE ORIGIN.
+## IF YOU DO NOT HEED THIS WARNING, YOU COULD EXPOSE YOUR USER AND PASSWORD TO ALL OF THE PUBLIC
+## YOU HAVE BEEN WARNED
