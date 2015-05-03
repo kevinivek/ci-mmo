@@ -29,3 +29,8 @@ obj/
 .Trashes
 ehthumbs.db
 Thumbs.db
+
+# ===== #
+# Other #
+# ===== #
+database_connection_config.txt
