@@ -11,6 +11,8 @@ public class DatabaseConnection
 {
 	string connString = "";
     MySqlConnection con = null;
+	MySqlCommand cmd = null;
+	MySqlDataReader rdr = null;
 
 	public DatabaseConnection() {
 		openConnection ();
@@ -60,6 +62,55 @@ public class DatabaseConnection
 		reader.Close ();
 		
 		return connString;
+	}
+
+	
+	// Read all entries from the table
+	public T getValue<T>(String key, String value, String target)
+	{
+		String query = string.Empty;
+
+		T returnValue = default(T);
+
+		try
+		{
+			query = "SELECT " + target + " FROM object WHERE " + key + "=" + value + ";";
+			Debug.Log("DB: Query(" + query + ")");
+			if (con.State.ToString() != "Open")
+				con.Open();
+			using (con)
+			{
+				using (cmd = new MySqlCommand(query, con))
+				{
+					rdr = cmd.ExecuteReader();
+					if (rdr.HasRows) {
+						while (rdr.Read()) {
+						rdr.Read();
+							switch(typeof(T).Name) {
+								case "Int32":
+									returnValue = (T)(object) int.Parse (rdr[target].ToString ());
+									break;
+								case "Float":
+									returnValue = (T)(object) float.Parse (rdr[target].ToString ());
+									break;
+								case "String":
+									returnValue = (T)(object) rdr[target].ToString ();
+									break;
+							}
+							//Debug.Log(target + "(" + typeof(T).Name.ToString() + "): " + returnValue); 
+						}
+					rdr.Dispose();
+					}
+				}
+			}
+		}
+		catch (Exception ex)
+		{
+			Debug.Log(ex.ToString());
+		}
+
+		return returnValue;
+
 	}
 	
 }

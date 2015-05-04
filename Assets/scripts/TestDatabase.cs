@@ -16,6 +16,10 @@ public class TestDatabase : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 		db = new DatabaseConnection ();
+
+		int value = db.getValue<int> ("id", Convert.ToString(1), "height");
+
+		transform.Translate (Vector2.up * value);
 	}
 
 	void OnApplicationQuit()
