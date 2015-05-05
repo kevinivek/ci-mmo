@@ -3,10 +3,10 @@ using System.Collections;
 
 public class PlayerController : MonoBehaviour {
 
-	public int id;
-	public string player_name;
-	public int level;
-	public int money;
+	public int id = 0;
+	public string player_name = "None";
+	public int level = 0;
+	public int money = 0;
 	private DatabaseConnection db;
 
 	// Use this for initialization
@@ -21,7 +21,8 @@ public class PlayerController : MonoBehaviour {
 
 	public void loadData(){
 		DataStructs.playerData tempData = db.getAvatarInfo (id);
-		
+
+		name = "Player_" + tempData.name;
 		player_name = tempData.name;
 		level = tempData.level;
 		money = tempData.money;

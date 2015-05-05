@@ -64,9 +64,9 @@ public class DatabaseConnection
 		return connString;
 	}
 
-	
+	/*
 	// Read all entries from the table
-	public T getValue<T>(String key, String value, String target)
+	public T getValue<T>(String key, String value, String target, String table)
 	{
 		String query = string.Empty;
 
@@ -74,7 +74,7 @@ public class DatabaseConnection
 
 		try
 		{
-			query = "SELECT " + target + " FROM object WHERE " + key + "=" + value + ";";
+			query = "SELECT " + target + " FROM " + table + " WHERE " + key + "=" + value + ";";
 			Debug.Log("DB: Query(" + query + ")");
 			if (con.State.ToString() != "Open")
 				con.Open();
@@ -84,7 +84,6 @@ public class DatabaseConnection
 				{
 					rdr = cmd.ExecuteReader();
 					if (rdr.HasRows) {
-						while (rdr.Read()) {
 						rdr.Read();
 							switch(typeof(T).Name) {
 								case "Int32":
@@ -112,9 +111,9 @@ public class DatabaseConnection
 		return returnValue;
 
 	}
-
+*/
 	
-	// Read all entries from the table
+	// Read all entries from specified avatar
 	public DataStructs.playerData getAvatarInfo(int avatarID)
 	{
 		string query = string.Empty;
@@ -123,6 +122,7 @@ public class DatabaseConnection
 		try
 		{
 			query = "SELECT * FROM avatar where id=" + avatarID + ";";
+			Debug.Log (query);
 			if (con.State.ToString() != "Open")
 				con.Open();
 			using (con)
@@ -143,11 +143,11 @@ public class DatabaseConnection
 						pdata.money = int.Parse(rdr["money"].ToString());
 						pdata.level = int.Parse(rdr["a_level"].ToString());
 
-						pdata.name = rdr["name"].ToString();
+						pdata.name = rdr["a_name"].ToString();
 
-						pdata.posx = float.Parse(rdr["posx"].ToString());
-						pdata.posy = float.Parse(rdr["posy"].ToString());
-						pdata.posz = float.Parse(rdr["posz"].ToString());
+						pdata.posx = float.Parse(rdr["last_x"].ToString());
+						pdata.posy = float.Parse(rdr["last_y"].ToString());
+						pdata.posz = float.Parse(rdr["last_z"].ToString());
 						rdr.Dispose();
 					}
 				}
@@ -158,6 +158,186 @@ public class DatabaseConnection
 			Debug.Log(ex.ToString());
 		}
 		return pdata;
+	}
+
+	// Read all entries from all avatars
+	public List<DataStructs.playerData> getAllAvatarsInfo()
+	{
+		string query = string.Empty;
+		List<DataStructs.playerData> dataList = new List<DataStructs.playerData>();
+
+		try
+		{
+			query = "SELECT * FROM avatar;";
+			Debug.Log (query);
+			if (con.State.ToString() != "Open")
+				con.Open();
+			using (con)
+			{
+				using (cmd = new MySqlCommand(query, con))
+				{
+					rdr = cmd.ExecuteReader();
+					if (rdr.HasRows) {
+						while (rdr.Read()) {
+							DataStructs.playerData pdata = new DataStructs.playerData();
+							pdata.id = int.Parse(rdr["id"].ToString());
+							pdata.acc_id = int.Parse(rdr["acc_id"].ToString());
+							pdata.weapon = int.Parse(rdr["weapon"].ToString());
+							pdata.helmet = int.Parse(rdr["helmet"].ToString());
+							pdata.armor = int.Parse(rdr["armor"].ToString());
+							pdata.vehicle = int.Parse(rdr["vehicle_id"].ToString());
+							pdata.minion = int.Parse(rdr["minion_id"].ToString());
+							pdata.currentQuest = int.Parse(rdr["curr_quest_id"].ToString());
+							pdata.money = int.Parse(rdr["money"].ToString());
+							pdata.level = int.Parse(rdr["a_level"].ToString());
+							
+							pdata.name = rdr["a_name"].ToString();
+							
+							pdata.posx = float.Parse(rdr["last_x"].ToString());
+							pdata.posy = float.Parse(rdr["last_y"].ToString());
+							pdata.posz = float.Parse(rdr["last_z"].ToString());
+							dataList.Add(pdata);
+							rdr.Dispose();
+						}
+					}
+				}
+			}
+		}
+		catch (Exception ex)
+		{
+			Debug.Log(ex.ToString());
+		}
+		return dataList;
+	}
+
+	// Get list of all avatar IDs
+	public List<int> getAvatarIDs()
+	{
+		string query = string.Empty;
+		List<int> idList = new List<int> ();
+		
+		try
+		{
+			query = "SELECT id FROM avatar;";
+			Debug.Log (query);
+			if (con.State.ToString() != "Open")
+				con.Open();
+			using (con)
+			{
+				using (cmd = new MySqlCommand(query, con))
+				{
+					rdr = cmd.ExecuteReader();
+					if (rdr.HasRows) {
+						while (rdr.Read()) {
+							idList.Add(int.Parse(rdr["id"].ToString()));
+						}
+					}
+					rdr.Dispose();
+				}
+			}
+		}
+		catch (Exception ex)
+		{
+			Debug.Log(ex.ToString());
+		}
+		return idList;
+	}
+
+	// Get list of all avatar IDs
+	public List<int> getAccountIDs()
+	{
+		string query = string.Empty;
+		List<int> idList = new List<int> ();
+
+		try
+		{
+			query = "SELECT acc.id FROM avatar a inner join account acc on acc.id=a.acc_id group by acc.id;";
+			Debug.Log (query);
+			if (con.State.ToString() != "Open")
+				con.Open();
+			using (con)
+			{
+				using (cmd = new MySqlCommand(query, con))
+				{
+					rdr = cmd.ExecuteReader();
+					if (rdr.HasRows) {
+						while (rdr.Read()) {
+							idList.Add(int.Parse(rdr["id"].ToString()));
+						}
+					}
+					rdr.Dispose();
+				}
+			}
+		}
+		catch (Exception ex)
+		{
+			Debug.Log(ex.ToString());
+		}
+		return idList;
+	}
+
+	// Get list of all avatar IDs
+	public int getFirstAvatarFromAcc(int accountId)
+	{
+		string query = string.Empty;
+		int avatarId = 0;
+		
+		try
+		{
+			query = "SELECT a.id FROM avatar a inner join account acc on a.acc_id=acc.id where acc.id="+accountId+";";
+			Debug.Log (query);
+			if (con.State.ToString() != "Open")
+				con.Open();
+			using (con)
+			{
+				using (cmd = new MySqlCommand(query, con))
+				{
+					rdr = cmd.ExecuteReader();
+					if (rdr.HasRows) {
+						rdr.Read();
+						avatarId = int.Parse(rdr["id"].ToString());
+					}
+					rdr.Dispose();
+				}
+			}
+		}
+		catch (Exception ex)
+		{
+			Debug.Log(ex.ToString());
+		}
+		return avatarId;
+	}
+
+	// Get list of all avatar IDs
+	public int login(String email, String password)
+	{
+		string query = string.Empty;
+		int accountID = 0;
+		
+		try
+		{
+			query = "SELECT acc.id FROM account acc where acc.email=" + email + " and acc.password=" + password + ";";
+			Debug.Log (query);
+			if (con.State.ToString() != "Open")
+				con.Open();
+			using (con)
+			{
+				using (cmd = new MySqlCommand(query, con))
+				{
+					rdr = cmd.ExecuteReader();
+					if (rdr.HasRows) {
+						rdr.Read();
+						accountID = int.Parse(rdr["id"].ToString());
+					}
+					rdr.Dispose();
+				}
+			}
+		}
+		catch (Exception ex)
+		{
+			Debug.Log(ex.ToString());
+		}
+		return accountID;
 	}
 
 	

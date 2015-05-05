@@ -13,35 +13,40 @@ using MySql.Data.MySqlClient;
 public class GameController : MonoBehaviour {
 
 	public GameObject loginWindow;
-	public InputField userID;
+	public InputField emailInput;
+	public InputField passwordInput;
 	public GameObject playerPrefab;
-	public GameObject player;
+	public List<GameObject> players;
 
 	DatabaseConnection db;
 
 	// Use this for initialization
 	void Start () {
 		loginWindow.SetActive (true); 
+		db = new DatabaseConnection ();
 	}
 
 	public void loginPlayer() {
 		loginWindow.SetActive (false);
-
 		setupPlayers ();
-
-		player = Instantiate (playerPrefab);
-		player.GetComponent<PlayerController> ().id = int.Parse(userID.text);
-		player.GetComponent<PlayerController> ().loadData ();
 	}
 
 	public void setupPlayers(){
+		List<int> idList = db.getAccountIDs ();
+		foreach (int id in idList) {
+			GameObject player = Instantiate (playerPrefab);
+			players.Add (player);
+			PlayerController playerScript = player.GetComponent<PlayerController> ();
+			playerScript.id = db.getFirstAvatarFromAcc(id);
+			playerScript.setDB (db);
+			playerScript.loadData ();
 
+		}
 	}
 	
 	public void testConnect() {
-		db = new DatabaseConnection ();
-		int value = db.getValue<int> ("id", Convert.ToString(1), "height");
-		transform.Translate (Vector2.up * value);
+		//int value = db.getValue<int> ("id", Convert.ToString(1), "height");
+		//transform.Translate (Vector2.up * value);
 	}
 
 	void OnApplicationQuit()
