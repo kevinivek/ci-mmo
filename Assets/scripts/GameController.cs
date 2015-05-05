@@ -13,8 +13,9 @@ using MySql.Data.MySqlClient;
 public class GameController : MonoBehaviour {
 
 	public GameObject loginWindow;
-	public InputField emailInput;
-	public InputField passwordInput;
+	public string emailInput = "none";
+	public string passwordInput = "none";
+	public GameObject loginFailedText;
 	public GameObject playerPrefab;
 	public List<GameObject> players;
 
@@ -27,8 +28,12 @@ public class GameController : MonoBehaviour {
 	}
 
 	public void loginPlayer() {
-		loginWindow.SetActive (false);
-		setupPlayers ();
+		if (db.login (emailInput, passwordInput) > 0) {
+			loginWindow.SetActive (false);
+			setupPlayers ();
+		} else {
+			loginFailedText.SetActive (true);
+		}
 	}
 
 	public void setupPlayers(){
@@ -43,7 +48,14 @@ public class GameController : MonoBehaviour {
 
 		}
 	}
-	
+
+	public void setEmailInput(string input) {
+		emailInput = input;
+	}
+
+	public void setPasswordInput(string input) {
+		passwordInput = input;
+	}
 	public void testConnect() {
 		//int value = db.getValue<int> ("id", Convert.ToString(1), "height");
 		//transform.Translate (Vector2.up * value);

@@ -316,7 +316,7 @@ public class DatabaseConnection
 		
 		try
 		{
-			query = "SELECT acc.id FROM account acc where acc.email=" + email + " and acc.password=" + password + ";";
+			query = "SELECT acc.id FROM account acc where acc.email='" + email + "' and acc.a_password='" + password + "';";
 			Debug.Log (query);
 			if (con.State.ToString() != "Open")
 				con.Open();
