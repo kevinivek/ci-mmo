@@ -13,7 +13,7 @@ public class DatabaseConnection
     MySqlConnection con = null;
 	MySqlCommand cmd = null;
 	MySqlDataReader rdr = null;
-
+	
 	public DatabaseConnection() {
 		openConnection ();
 	}
@@ -112,5 +112,53 @@ public class DatabaseConnection
 		return returnValue;
 
 	}
+
+	
+	// Read all entries from the table
+	public DataStructs.playerData getAvatarInfo(int avatarID)
+	{
+		string query = string.Empty;
+		DataStructs.playerData pdata = new DataStructs.playerData();
+
+		try
+		{
+			query = "SELECT * FROM avatar where id=" + avatarID + ";";
+			if (con.State.ToString() != "Open")
+				con.Open();
+			using (con)
+			{
+				using (cmd = new MySqlCommand(query, con))
+				{
+					rdr = cmd.ExecuteReader();
+					if (rdr.HasRows) {
+						rdr.Read();
+						pdata.id = int.Parse(rdr["id"].ToString());
+						pdata.acc_id = int.Parse(rdr["acc_id"].ToString());
+						pdata.weapon = int.Parse(rdr["weapon"].ToString());
+						pdata.helmet = int.Parse(rdr["helmet"].ToString());
+						pdata.armor = int.Parse(rdr["armor"].ToString());
+						pdata.vehicle = int.Parse(rdr["vehicle_id"].ToString());
+						pdata.minion = int.Parse(rdr["minion_id"].ToString());
+						pdata.currentQuest = int.Parse(rdr["curr_quest_id"].ToString());
+						pdata.money = int.Parse(rdr["money"].ToString());
+						pdata.level = int.Parse(rdr["a_level"].ToString());
+
+						pdata.name = rdr["name"].ToString();
+
+						pdata.posx = float.Parse(rdr["posx"].ToString());
+						pdata.posy = float.Parse(rdr["posy"].ToString());
+						pdata.posz = float.Parse(rdr["posz"].ToString());
+						rdr.Dispose();
+					}
+				}
+			}
+		}
+		catch (Exception ex)
+		{
+			Debug.Log(ex.ToString());
+		}
+		return pdata;
+	}
+
 	
 }

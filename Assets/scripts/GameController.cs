@@ -24,9 +24,18 @@ public class GameController : MonoBehaviour {
 		loginWindow.SetActive (true); 
 	}
 
-	public void initPlayer() {
+	public void loginPlayer() {
 		loginWindow.SetActive (false);
+
+		setupPlayers ();
+
 		player = Instantiate (playerPrefab);
+		player.GetComponent<PlayerController> ().id = int.Parse(userID.text);
+		player.GetComponent<PlayerController> ().loadData ();
+	}
+
+	public void setupPlayers(){
+
 	}
 	
 	public void testConnect() {
